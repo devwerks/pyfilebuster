@@ -5,6 +5,9 @@ A fast web fuzzer written in Python
 The Idea behind this is from [Filebuster](https://github.com/henshin/filebuster). But i hate PERL and i want to have the
 same tool written in Python. So here is it. So far not all features are implemented.
 
+### Wordlists:
+Copy new wordlists into the wordlists directory. Now you can load them with out path specification.
+
 ### Usage:
 ```
 filebuster.py -w/--word WORDLIST -u/--url URL/{fuzz}
