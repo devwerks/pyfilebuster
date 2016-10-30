@@ -82,7 +82,6 @@ def scan():
 
     try:
         opts, args = getopt.getopt(sys.argv[1:], "ht:u:w:", ["help", "timeout=", "url=", "word="])
-        print opts
     except getopt.GetoptError:
         help()
         sys.exit(2)

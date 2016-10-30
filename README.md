@@ -10,11 +10,11 @@ Copy new wordlists into the wordlists directory. Now you can load them with out 
 
 ### Usage:
 ```
-filebuster.py -w/--word WORDLIST -u/--url URL/{fuzz}
+filebuster.py -w/--word WORDLIST -t/--timeout -u/--url URL/{fuzz}
 
 Example: filebuster.py -w fast.txt -u http://test.net/
 
-Example: filebuster.py -w wordlist.txt -u http://test.net/{fuzz}.html
+Example: filebuster.py -w wordlist.txt -t 30 -u http://test.net/{fuzz}.html
 ```
 
 ### Contact:
@@ -40,9 +40,9 @@ Author: Johannes Schroeter - www.devwerks.net
 It is the end user's responsibility to obey all applicable local, state and federal laws.
 Developers assume no liability and are not responsible for any misuse or damage caused by this program
 
-filebuster.py -w/--word WORDLIST -u/--url URL/{fuzz}
+filebuster.py -w/--word WORDLIST -t/--timeout -u/--url URL/{fuzz}
 Example: filebuster.py -w fast.txt -u http://test.net/
-Example: filebuster.py -w wordlist.txt -u http://test.net/{fuzz}.html
+Example: filebuster.py -w wordlist.txt -t 30 -u http://test.net/{fuzz}.html
 ```
 
 ### TODO:
