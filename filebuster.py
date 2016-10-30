@@ -32,27 +32,27 @@ def listWordlists():
     print onlyfiles
 
 
-def request(newurl):
+def request(newurl, timeout):
     try:
         req = urllib2.Request(newurl)
         req.get_method = lambda: "HEAD"
         req.add_header("User-agent", useragent)
-        response = urllib2.urlopen(req)
+        response = urllib2.urlopen(req, timeout=timeout)
         data = response.read()
         sys.stdout.write(GREEN)
-        output = "%s (size: %s)\n" % (newurl.rstrip(), len(data))
+        output = "%s (size: %s)\n" % (newurl, len(data))
         sys.stdout.write(output)
         sys.stdout.write(RESET)
     except urllib2.HTTPError, e:
         sys.stdout.write(RED)
-        sys.stdout.write("%s\n" % newurl)
+        sys.stdout.write("%s" % newurl)
+        sys.stdout.write(" (error: %s)\n" % e.code)
         sys.stdout.write(RESET)
-        # print(e.code)
     except urllib2.URLError, e:
         sys.stdout.write(RED)
-        sys.stdout.write("%s\n" % newurl)
+        sys.stdout.write("%s" % newurl)
+        sys.stdout.write(" (error: %s)\n" % e.args)
         sys.stdout.write(RESET)
-        # print(e.args)
 
 
 def createurl(url, word):
@@ -63,12 +63,12 @@ def createurl(url, word):
         return newurl
 
 
-def start(url, wordlist):
+def start(url, wordlist, timeout):
     if wordlist != 0:
         with open(wordlist) as f:
             for line in f:
                 newurl = createurl(url.rstrip(), line.rstrip())
-                thread = Thread(target=request, args=(newurl,))
+                thread = Thread(target=request, args=(newurl, timeout,))
                 thread.start()
                 thread.join()
 
@@ -77,10 +77,12 @@ def scan():
     version()
 
     wordlist = 0
+    timeout  = 600
+    url = ''
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "hu:w:", ["help", "url=", "word="])
-
+        opts, args = getopt.getopt(sys.argv[1:], "ht:u:w:", ["help", "timeout=", "url=", "word="])
+        print opts
     except getopt.GetoptError:
         help()
         sys.exit(2)
@@ -91,6 +93,9 @@ def scan():
             help()
             sys.exit()
 
+        elif opt in ("-t", "--timeout"):
+            timeout = float(arg)
+
         elif opt in ("-w", "--word"):
             path = BASE_DIR + "/wordlists/" + arg
             if os.path.isfile(path):
@@ -100,7 +105,9 @@ def scan():
                 sys.exit()
 
         elif opt in ("-u", "--url"):
-            start(arg, wordlist)
+            url = arg
+
+    start(url, wordlist, timeout)
 
 
 def version():
@@ -108,9 +115,9 @@ def version():
 
 
 def help():
-    sys.stdout.write("filebuster.py -w/--word WORDLIST -u/--url URL/{fuzz}\n")
+    sys.stdout.write("filebuster.py -w/--word WORDLIST -t/--timeout -u/--url URL/{fuzz}\n")
     sys.stdout.write("Example: filebuster.py -w fast.txt -u http://test.net/\n")
-    sys.stdout.write("Example: filebuster.py -w wordlist.txt -u http://test.net/{fuzz}.html\n\n")
+    sys.stdout.write("Example: filebuster.py -w wordlist.txt -t 30 -u http://test.net/{fuzz}.html\n\n")
 
 
 def main():
