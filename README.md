@@ -44,3 +44,7 @@ filebuster.py -w/--word WORDLIST -u/--url URL/{fuzz}
 Example: filebuster.py -w fast.txt -u http://test.net/
 Example: filebuster.py -w wordlist.txt -u http://test.net/{fuzz}.html
 ```
+
+### TODO:
+- optimize Threading
+- add more Features
