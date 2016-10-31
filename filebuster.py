@@ -1,5 +1,7 @@
 import sys, getopt, os, urllib2
 from threading import Thread
+from os import listdir
+from os.path import isfile, join
 from colors import *
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -14,7 +16,7 @@ banner = """
 | |_) | |_| | |   | | |  __/ |_/ / |_| \__ \ ||  __/ |
 | .__/ \__, \_|   |_|_|\___\____/ \__,_|___/\__\___|_|
 | |     __/ |
-|_|    |___/                                          0.1
+|_|    |___/                                          0.2
 
 Web fuzzer in Python
 
@@ -26,10 +28,16 @@ Developers assume no liability and are not responsible for any misuse or damage 
 
 """
 
+def printRed(string, error):
+    sys.stdout.write(RED)
+    sys.stdout.write("%s" % string)
+    sys.stdout.write(" (error: %s)\n" % error)
+    sys.stdout.write(RESET)
+
 
 def listWordlists():
     onlyfiles = [f for f in listdir(BASE_DIR + "/wordlists/") if isfile(join(BASE_DIR + "/wordlists/", f))]
-    print onlyfiles
+    sys.stdout.write("%s\n" % onlyfiles)
 
 
 def request(newurl, timeout):
@@ -44,15 +52,9 @@ def request(newurl, timeout):
         sys.stdout.write(output)
         sys.stdout.write(RESET)
     except urllib2.HTTPError, e:
-        sys.stdout.write(RED)
-        sys.stdout.write("%s" % newurl)
-        sys.stdout.write(" (error: %s)\n" % e.code)
-        sys.stdout.write(RESET)
+        printRed(newurl, e.code)
     except urllib2.URLError, e:
-        sys.stdout.write(RED)
-        sys.stdout.write("%s" % newurl)
-        sys.stdout.write(" (error: %s)\n" % e.args)
-        sys.stdout.write(RESET)
+        printRed(newurl, e.args)
 
 
 def createurl(url, word):

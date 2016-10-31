@@ -1,4 +1,4 @@
-# pyFileBuster
+# pyFileBuster [![Code Climate](https://codeclimate.com/github/devwerks/pyfilebuster/badges/gpa.svg)](https://codeclimate.com/github/devwerks/pyfilebuster) [![Test Coverage](https://codeclimate.com/github/devwerks/pyfilebuster/badges/coverage.svg)](https://codeclimate.com/github/devwerks/pyfilebuster/coverage)
 A fast web fuzzer written in Python
 
 ### Why?:
@@ -30,7 +30,7 @@ http://devwerks.net
 | |_) | |_| | |   | | |  __/ |_/ / |_| \__ \ ||  __/ |
 | .__/ \__, \_|   |_|_|\___\____/ \__,_|___/\__\___|_|
 | |     __/ |
-|_|    |___/                                          0.1
+|_|    |___/                                          0.2
 
 Web fuzzer in Python
 
