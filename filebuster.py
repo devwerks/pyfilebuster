@@ -68,6 +68,9 @@ def createurl(url, word):
 def start(url, wordlist, timeout):
     if wordlist != 0:
         with open(wordlist) as f:
+            thread = Thread(target=request, args=(url, timeout,))
+            thread.start()
+            thread.join()
             for line in f:
                 newurl = createurl(url.rstrip(), line.rstrip())
                 thread = Thread(target=request, args=(newurl, timeout,))
