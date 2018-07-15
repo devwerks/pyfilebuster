@@ -1,5 +1,5 @@
 # pyFileBuster [![Code Climate](https://codeclimate.com/github/devwerks/pyfilebuster/badges/gpa.svg)](https://codeclimate.com/github/devwerks/pyfilebuster) [![Test Coverage](https://codeclimate.com/github/devwerks/pyfilebuster/badges/coverage.svg)](https://codeclimate.com/github/devwerks/pyfilebuster/coverage)
-A fast web fuzzer written in Python
+A fast web fuzzer written in Python. With support for AWS S3 buckets.
 
 ### Why?:
 The Idea behind this is from [Filebuster](https://github.com/henshin/filebuster). But i hate PERL and i want to have the
@@ -10,11 +10,13 @@ Copy new wordlists into the wordlists directory. Now you can load them with out 
 
 ### Usage:
 ```
-filebuster.py -w/--word WORDLIST -t/--timeout -u/--url URL/{fuzz}
+filebuster.py -w/--word WORDLIST -t/--timeout -u/--url URL/{fuzz} -s/--s3
 
 Example: filebuster.py -w fast.txt -u http://test.net/
 
 Example: filebuster.py -w wordlist.txt -t 30 -u http://test.net/{fuzz}.html
+
+Example: filebuster.py -w bucket.txt -s\n\n")
 ```
 
 ### Contact:
@@ -30,7 +32,7 @@ http://devwerks.net
 | |_) | |_| | |   | | |  __/ |_/ / |_| \__ \ ||  __/ |
 | .__/ \__, \_|   |_|_|\___\____/ \__,_|___/\__\___|_|
 | |     __/ |
-|_|    |___/                                          0.2
+|_|    |___/                                          0.3
 
 Web fuzzer in Python
 
@@ -40,9 +42,11 @@ Author: Johannes Schroeter - www.devwerks.net
 It is the end user's responsibility to obey all applicable local, state and federal laws.
 Developers assume no liability and are not responsible for any misuse or damage caused by this program
 
-filebuster.py -w/--word WORDLIST -t/--timeout -u/--url URL/{fuzz}
+filebuster.py -w/--word WORDLIST -t/--timeout -u/--url URL/{fuzz} -s/--s3
 Example: filebuster.py -w fast.txt -u http://test.net/
 Example: filebuster.py -w wordlist.txt -t 30 -u http://test.net/{fuzz}.html
+New Feature Enumerate AWS S3 buckets
+Example: filebuster.py -w bucket.txt -s
 ```
 
 ### TODO:

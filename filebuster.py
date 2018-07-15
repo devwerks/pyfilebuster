@@ -3,6 +3,7 @@ from threading import Thread
 from os import listdir
 from os.path import isfile, join
 from colors import *
+import xmltodict
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
@@ -16,7 +17,7 @@ banner = """
 | |_) | |_| | |   | | |  __/ |_/ / |_| \__ \ ||  __/ |
 | .__/ \__, \_|   |_|_|\___\____/ \__,_|___/\__\___|_|
 | |     __/ |
-|_|    |___/                                          0.2
+|_|    |___/                                          0.3
 
 Web fuzzer in Python
 
@@ -40,16 +41,28 @@ def listWordlists():
     sys.stdout.write("%s\n" % onlyfiles)
 
 
-def request(newurl, timeout):
+def request(newurl, timeout, s3):
     try:
         req = urllib2.Request(newurl)
-        req.get_method = lambda: "HEAD"
+        if s3 == False:
+            req.get_method = lambda: "HEAD"
         req.add_header("User-agent", useragent)
         response = urllib2.urlopen(req, timeout=timeout)
         data = response.read()
         sys.stdout.write(GREEN)
         output = "%s (size: %s)\n" % (newurl, len(data))
         sys.stdout.write(output)
+        if s3:
+            objects = xmltodict.parse(data)
+            Keys = []
+            interest = []
+            try:
+                for child in objects['ListBucketResult']['Contents']:
+                    Keys.append(child['Key'])
+            except:
+                pass
+            for words in Keys:
+                sys.stdout.write("%s\n" % words)
         sys.stdout.write(RESET)
     except urllib2.HTTPError, e:
         printRed(newurl, e.code)
@@ -65,15 +78,12 @@ def createurl(url, word):
         return newurl
 
 
-def start(url, wordlist, timeout):
+def start(url, wordlist, timeout, s3):
     if wordlist != 0:
         with open(wordlist) as f:
-            thread = Thread(target=request, args=(url, timeout,))
-            thread.start()
-            thread.join()
             for line in f:
                 newurl = createurl(url.rstrip(), line.rstrip())
-                thread = Thread(target=request, args=(newurl, timeout,))
+                thread = Thread(target=request, args=(newurl, timeout, s3,))
                 thread.start()
                 thread.join()
 
@@ -84,15 +94,15 @@ def scan():
     wordlist = 0
     timeout  = 600
     url = ''
+    s3 = False
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "ht:u:w:", ["help", "timeout=", "url=", "word="])
+        opts, args = getopt.getopt(sys.argv[1:], "ht:u:w:s", ["help", "timeout=", "url=", "word=", "s3"])
     except getopt.GetoptError:
         help()
         sys.exit(2)
 
     for opt, arg in opts:
-
         if opt in ("-h", "--help"):
             help()
             sys.exit()
@@ -111,7 +121,11 @@ def scan():
         elif opt in ("-u", "--url"):
             url = arg
 
-    start(url, wordlist, timeout)
+        elif opt in ("-s", "--s3"):
+            url = "http://{fuzz}.s3.amazonaws.com"
+            s3 = True
+
+    start(url, wordlist, timeout, s3)
 
 
 def version():
@@ -119,10 +133,13 @@ def version():
 
 
 def help():
-    sys.stdout.write("filebuster.py -w/--word WORDLIST -t/--timeout -u/--url URL/{fuzz}\n")
+    sys.stdout.write("filebuster.py -w/--word WORDLIST -t/--timeout -u/--url URL/{fuzz} -s/--s3\n")
     sys.stdout.write("Example: filebuster.py -w fast.txt -u http://test.net/\n")
-    sys.stdout.write("Example: filebuster.py -w wordlist.txt -t 30 -u http://test.net/{fuzz}.html\n\n")
-
+    sys.stdout.write("Example: filebuster.py -w wordlist.txt -t 30 -u http://test.net/{fuzz}.html\n")
+    sys.stdout.write(RED)
+    sys.stdout.write("New Feature Enumerate AWS S3 buckets\n")
+    sys.stdout.write(RESET)
+    sys.stdout.write("Example: filebuster.py -w bucket.txt -s\n\n")
 
 def main():
     scan()
