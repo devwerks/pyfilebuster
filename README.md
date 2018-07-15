@@ -1,4 +1,4 @@
-# pyFileBuster [![Code Climate](https://codeclimate.com/github/devwerks/pyfilebuster/badges/gpa.svg)](https://codeclimate.com/github/devwerks/pyfilebuster) [![Test Coverage](https://codeclimate.com/github/devwerks/pyfilebuster/badges/coverage.svg)](https://codeclimate.com/github/devwerks/pyfilebuster/coverage)
+# pyFileBuster [![Build Status](https://travis-ci.org/devwerks/pyfilebuster.svg?branch=master)](https://travis-ci.org/devwerks/pyfilebuster)
 A fast web fuzzer written in Python. With support for AWS S3 buckets.
 
 ### Why?:
