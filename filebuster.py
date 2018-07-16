@@ -1,5 +1,6 @@
 import sys, getopt, os, urllib2
 from threading import Thread
+import threading
 from os import listdir
 from os.path import isfile, join
 from colors import *
@@ -30,10 +31,8 @@ Developers assume no liability and are not responsible for any misuse or damage 
 """
 
 def printRed(string, error):
-    sys.stdout.write(RED)
-    sys.stdout.write("%s" % string)
-    sys.stdout.write(" (error: %s)\n" % error)
-    sys.stdout.write(RESET)
+    errorstring = RED + "%s" % string + " (error: %s)\n" % error + RESET
+    sys.stdout.write(errorstring)
 
 
 def listWordlists():
@@ -49,21 +48,19 @@ def request(newurl, timeout, s3):
         req.add_header("User-agent", useragent)
         response = urllib2.urlopen(req, timeout=timeout)
         data = response.read()
-        sys.stdout.write(GREEN)
-        output = "%s (size: %s)\n" % (newurl, len(data))
-        sys.stdout.write(output)
+        content = ""
         if s3:
             objects = xmltodict.parse(data)
             Keys = []
-            interest = []
             try:
                 for child in objects['ListBucketResult']['Contents']:
                     Keys.append(child['Key'])
             except:
                 pass
             for words in Keys:
-                sys.stdout.write("%s\n" % words)
-        sys.stdout.write(RESET)
+                content += "%s\n" % words
+        output = GREEN + "%s (size: %s)\n" % (newurl, len(data)) + content + RESET
+        sys.stdout.write(output)
     except urllib2.HTTPError, e:
         printRed(newurl, e.code)
     except urllib2.URLError, e:
@@ -79,13 +76,18 @@ def createurl(url, word):
 
 
 def start(url, wordlist, timeout, s3):
+    threads = []
     if wordlist != 0:
         with open(wordlist) as f:
             for line in f:
                 newurl = createurl(url.rstrip(), line.rstrip())
-                thread = Thread(target=request, args=(newurl, timeout, s3,))
-                thread.start()
-                thread.join()
+                at = threading.activeCount()
+                if at <= 10:
+                    thread = Thread(target=request, args=(newurl, timeout, s3,))
+                    threads.append(thread)
+                    thread.start()
+                else:
+                    request(newurl, timeout, s3)
 
 
 def scan():

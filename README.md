@@ -50,5 +50,4 @@ Example: filebuster.py -w bucket.txt -s
 ```
 
 ### TODO:
-- optimize Threading
 - add more Features
