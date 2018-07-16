@@ -1,4 +1,5 @@
 import sys, getopt, os, urllib2
+import time
 from threading import Thread
 import threading
 from os import listdir
@@ -30,6 +31,9 @@ Developers assume no liability and are not responsible for any misuse or damage 
 
 """
 
+count = 0
+reach = 0
+
 def printRed(string, error):
     errorstring = RED + "%s" % string + " (error: %s)\n" % error + RESET
     sys.stdout.write(errorstring)
@@ -40,8 +44,19 @@ def listWordlists():
     sys.stdout.write("%s\n" % onlyfiles)
 
 
+def write_interesting_file(filepath):
+    try:
+        with open('files.txt', 'ab+') as interesting_file:
+            interesting_file.write(filepath.encode('utf-8'))
+            interesting_file.write('\n'.encode('utf-8'))
+    except:
+        pass
+
+
 def request(newurl, timeout, s3):
     try:
+        global count
+        count += 1
         req = urllib2.Request(newurl)
         if s3 == False:
             req.get_method = lambda: "HEAD"
@@ -59,6 +74,10 @@ def request(newurl, timeout, s3):
                 pass
             for words in Keys:
                 content += "%s\n" % words
+                collectable = newurl + '/' + words.encode('utf-8').strip()
+                write_interesting_file(collectable)
+        global reach
+        reach += 1
         output = GREEN + "%s (size: %s)\n" % (newurl, len(data)) + content + RESET
         sys.stdout.write(output)
     except urllib2.HTTPError, e:
@@ -145,6 +164,9 @@ def help():
 
 def main():
     scan()
+    while threading.activeCount() > 1:
+        time.sleep(0.2)
+    sys.stdout.write("\n%s / %s\n" % (reach, count))
     sys.exit()
 
 
